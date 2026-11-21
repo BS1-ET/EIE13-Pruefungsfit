@@ -95,7 +95,7 @@ const BEREICHE = [
  {id:"bma", icon:"🔥", titel:"Brandmeldeanlagen", kurz:"BMA", text:"Komponenten, Melderwahl, A_M und D_H, Ansteuerungen"},
  {id:"ant", icon:"📡", titel:"Antennentechnik", kurz:"ANT", text:"Frequenzen, Pegel, Mast, Erdung, SAT-ZF, Multischalter"},
  {id:"elek", icon:"💡", titel:"Transistor und LED", kurz:"ELEK", text:"NPN-Transistor als Schalter, LED mit Vorwiderstand"},
- {id:"span", icon:"⚡", titel:"Leistung und Spannungsfall", kurz:"U·I", text:"P = U · I, Spannungsfall auf Melder- und Sirenenleitungen"},
+ {id:"span", icon:"⚡", titel:"Leistung, Spannungsfall und PoE", kurz:"U·I", text:"P = U · I, Spannungsfall auf Melder- und Sirenenleitungen, PoE"},
  {id:"energie", icon:"💶", titel:"Energiekosten", kurz:"€", text:"kWh, Kosten pro Jahr, zwei Geräte vergleichen"},
  {id:"fehler", icon:"🔎", titel:"Fehlersuche", kurz:"FEHLER", text:"Störungsfälle aus EMA, BMA, SAT und Elektronik"}
 ];
@@ -138,6 +138,7 @@ const KARTEN = {
   ["Inspektion – Wartung?","Inspektion vierteljährlich · Wartung mindestens jährlich (Fachfirma)."],
   ["Wer setzt die BMA nach Feueralarm zurück?","Die Feuerwehr, nachdem sie die Ursache geprüft hat."],
   ["Akku der BMZ?","72 h Überbrückung (30 h bei Störungsweiterleitung) + 30 min Alarm: K = t · I_R + 0,5 h · I_A"],
+  ["Wie funktioniert ein Ansaugrauchmelder und wo wird er eingesetzt?","Ein Lüfter saugt über ein Rohrnetz mit Ansaugöffnungen ständig Luft aus dem Raum an und prüft sie in einer Messkammer sehr empfindlich auf Rauch. Einsatz: hohe Hallen, Serverräume, Kühllager und dort, wo Melder schwer zu warten oder unsichtbar sein sollen (z. B. Museen)."],
   ["Vorteil Ringbus mit adressierbaren Meldern?","Bei Leitungsbruch fällt kein Melder aus; die BMZ zeigt genau, welcher Melder ausgelöst hat."]
  ],
  ant:[
@@ -193,7 +194,11 @@ const KARTEN = {
   ["Wie verringerst du den Spannungsfall?","Größerer Querschnitt (Adern parallel), kürzere Leitung, höhere Betriebsspannung."],
   ["Warum ist 24 V günstiger als 12 V?","Bei gleicher Leistung halber Strom → halber Spannungsfall, und er ist prozentual noch kleiner."],
   ["Verlustleistung auf der Leitung?","P_V = I² · R_L"],
-  ["Leistung einer Sirene mit 12 V und 0,5 A?","P = 12 V · 0,5 A = 6 W"]
+  ["Leistung einer Sirene mit 12 V und 0,5 A?","P = 12 V · 0,5 A = 6 W"],
+  ["Was ist PoE?","Power over Ethernet: Daten und Energie über dasselbe Netzwerkkabel – z. B. für IP-Kameras, WLAN-Access-Points oder IP-Telefone. Kein eigenes Netzteil am Gerät nötig."],
+  ["PoE-Standards und Leistung je Port?","IEEE 802.3af: 15,4 W (am Gerät ca. 13 W)<br>802.3at (PoE+): 30 W<br>802.3bt (PoE++): bis 90 W"],
+  ["Maximale Leitungslänge bei PoE?","100 m (wie bei Ethernet über Twisted-Pair-Kabel)."],
+  ["Was ist das PoE-Budget eines Switches?","Die Gesamtleistung, die der Switch an allen Ports zusammen liefern kann. Die Summe der Geräte muss darunter bleiben."]
  ],
  energie:[
   ["Formel elektrische Arbeit?","W = P · t"],
@@ -292,6 +297,9 @@ const QUIZ = {
   {typ:"zahl",k:"IA3",f:"Welcher Querschnitt ist mindestens nötig? l = 30 m, I = 0,3 A, 12 V, ΔU = 3 %, Kupfer. (in mm²)",l:0.893,tol:2,einheit:"mm²",e:"A = 2 · 30 · 0,3 / (56 · 0,36) = 18 / 20,16 = 0,89 mm²"},
   {typ:"zahl",k:"IA3",f:"Bei einer 24-V-BMZ fallen auf der Leitung 0,5 V ab. Wie groß ist der Spannungsfall in %?",l:2.08,tol:1,einheit:"%",e:"Δu = 0,5 V / 24 V · 100 % = 2,08 %"},
   {typ:"mc",k:"IA2",f:"Die Leitung wird doppelt so lang. Was passiert mit dem Spannungsfall?",o:["halbiert sich","bleibt gleich","verdoppelt sich"],r:2,e:"ΔU ist proportional zur Länge l."},
+  {typ:"zahl",k:"IA3",f:"Vier IP-Kameras mit je 12 W hängen an einem PoE-Switch mit 60 W PoE-Budget. Wie viel Leistung bleibt als Reserve (in W)?",l:12,tol:0.5,einheit:"W",e:"4 · 12 W = 48 W ≤ 60 W → Budget reicht, Reserve 60 W − 48 W = 12 W."},
+  {typ:"zahl",k:"IA3",f:"Eine IP-Kamera braucht 12 W, der PoE-Switch arbeitet mit 48 V. Welcher Strom fließt zur Kamera (in A)?",l:0.25,tol:1,einheit:"A",e:"I = P / U = 12 W / 48 V = 0,25 A"},
+  {typ:"mc",k:"IA2",f:"Eine IP-Kamera braucht 12 W. Welcher PoE-Standard reicht mindestens?",o:["IEEE 802.3af (15,4 W je Port, ca. 13 W am Gerät)","nur IEEE 802.3at (30 W)","nur IEEE 802.3bt (90 W)"],r:0,e:"802.3af liefert am Gerät knapp 13 W – das reicht für 12 W. Stärkere Geräte brauchen 802.3at oder 802.3bt."},
   {typ:"mc",k:"IA2",f:"Warum haben 24-V-Anlagen bei gleicher Leistung weniger Probleme mit dem Spannungsfall als 12-V-Anlagen?",o:["weil Kupfer bei 24 V besser leitet","weil der Strom nur halb so groß ist","weil die Leitungen kürzer sind"],r:1,e:"P = U · I: doppelte Spannung → halber Strom → halber Spannungsfall."}
  ],
  energie:[
@@ -326,11 +334,11 @@ const QUIZ = {
 const PLAN = [
  ["Woche 1","Leistung & Energiekosten","Karteikarten U·I und €, Quiz Energiekosten, Rechentrainer Energievergleich","Lies bei drei Geräten zu Hause das Typenschild ab und berechne, was sie dich im Jahr kosten."],
  ["Woche 2","Transistor & LED","Karteikarten Transistor und LED, Quiz, Rechentrainer LED und Transistor","Rechentrainer LED: Schaffe 5 richtige Aufgaben hintereinander."],
- ["Woche 3","Spannungsfall","Quiz Leistung & Spannungsfall, Rechentrainer Spannungsfall","Erkläre einem Mitschüler in einer Minute, warum 24-V-Anlagen weniger Probleme mit dem Spannungsfall haben."],
+ ["Woche 3","Spannungsfall & PoE","Quiz Leistung, Spannungsfall und PoE, Rechentrainer Spannungsfall","Erkläre einem Mitschüler in einer Minute, warum 24-V-Anlagen weniger Probleme mit dem Spannungsfall haben."],
  ["Woche 4","EMA","Karteikarten EMA, Quiz EMA, Wiederholungsblatt EMA Teil A–D","Finde im Betrieb drei EMA-Melder und bestimme jeweils die Überwachungsart (ohne Fotos von Personen oder Adressen)."],
  ["Woche 5","EMA-Akku & BMA","Wiederholungsblatt EMA Teil E, Karteikarten BMA, Quiz BMA, Wiederholungsblatt BMA","Miss deinen Klassenraum aus und plane die Rauchmelder mit A_M und D_H."],
  ["Woche 6","Antennen Grundlagen & Pegel","Karteikarten Antennentechnik, Quiz, Wiederholungsblatt Antennentechnik Teil 1","Zeichne die Antennenanlage bei dir zu Hause oder im Betrieb als Übersichtsschaltplan."],
- ["Woche 7","Satellitenempfang & Fehlersuche","Rechentrainer Sat-ZF, Wiederholungsblatt Antennentechnik Teil 2, Bereich Fehlersuche","Bestimme mit einer Sat-Finder-App Azimut und Elevation für ASTRA 19,2° Ost an deinem Wohnort."],
+ ["Woche 7","Satellitenempfang & Fehlersuche","Rechentrainer Sat-ZF, Wiederholungsblatt Antennentechnik Teil 2, Bereich Fehlersuche","Schau dir eine Sat-Anlage zu Hause oder im Betrieb an: Welches LNB und welcher Multischalter sind verbaut? Begründe, warum genau diese Bauteile gewählt wurden."],
  ["Woche 8","Prüfungsmix","Prüfungsmix mehrmals, alle Karteikarten in Fach 3","Schaffe den Prüfungsmix dreimal mit mindestens 80 %."]
 ];
 const MATERIAL = [
@@ -588,7 +596,7 @@ function seiteInfo(){
  $("#app").innerHTML=`<div class="karte"><h2>So lernst du mit Prüfungsfit</h2>
   <ol>
    <li><b>Karteikarten:</b> Frage lesen, Antwort laut sagen, Karte umdrehen. „Gewusst“ schiebt die Karte ein Fach weiter, „Nochmal“ zurück in Fach 1.</li>
-   <li><b>Quiz:</b> Pro Bereich 10–12 Fragen (Auswahl, Rechnen, Zuordnen) in zufälliger Reihenfolge. Am Ende siehst du, ob du beim Nennen, Erklären oder Berechnen noch Lücken hast. Ab 80 % ist der Bereich auf der Lernlandkarte grün.</li>
+   <li><b>Quiz:</b> Pro Bereich 10–14 Fragen (Auswahl, Rechnen, Zuordnen) in zufälliger Reihenfolge. Am Ende siehst du, ob du beim Nennen, Erklären oder Berechnen noch Lücken hast. Ab 80 % ist der Bereich auf der Lernlandkarte grün.</li>
    <li><b>Rechentrainer:</b> Immer neue Zahlen – rechne auf Papier mit Formel, Einsetzen und Einheit wie in der Prüfung.</li>
    <li><b>Prüfungsmix:</b> In den letzten zwei Wochen mehrmals durchführen.</li>
    <li><b>Fehlersuche:</b> Störungsfälle wie im Kundendienst – erst überlegen, dann Karte umdrehen.</li>
