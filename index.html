@@ -417,30 +417,46 @@ function seiteBereich(id,tab="karten"){
  tab==="karten"?karteikarten(id):quizStart(id,QUIZ[id],"inhalt",id);
 }
 
-/* ---------- Karteikarten mit 3 Fächern ---------- */
+/* ---------- Karteikarten mit 3 Fächern (Lernkartei) ----------
+   Fach 1: jede Runde · Fach 2: jede zweite Runde · Fach 3: sicher
+   Gewusst → ein Fach weiter, Karte verlässt die Runde
+   Nochmal → zurück in Fach 1, kommt nach 3 anderen Karten wieder */
+const STAPEL = {};
+const fachVon = (id,i) => stand.fach[id+"-"+i]||1;
+function neueRunde(id){
+ const st = STAPEL[id] || (STAPEL[id] = {runde:0, queue:[]});
+ st.runde++;
+ const alle = KARTEN[id].map((_,i)=>i);
+ const f1 = mischen(alle.filter(i=>fachVon(id,i)===1));
+ let f2 = mischen(alle.filter(i=>fachVon(id,i)===2));
+ if(f1.length && st.runde%2===1) f2 = [];   // Fach 2 nur jede zweite Runde
+ st.queue = f1.concat(f2);
+}
 function karteikarten(id){
- const liste = KARTEN[id].map((k,i)=>({i,k,fach:stand.fach[id+"-"+i]||1}));
- const offen = liste.filter(x=>x.fach<3);
- const zaehl = f=>liste.filter(x=>x.fach===f).length;
+ const zaehl = f=>KARTEN[id].filter((_,i)=>fachVon(id,i)===f).length;
  const kopf = `<div class="fach"><span>Fach 1 (neu): ${zaehl(1)}</span><span>Fach 2 (fast): ${zaehl(2)}</span><span style="background:var(--gruen-hell)">Fach 3 (sicher): ${zaehl(3)}</span></div>`;
- if(!offen.length){
+ if(zaehl(3)===KARTEN[id].length){
   $("#inhalt").innerHTML = kopf+`<div class="feedback ok">Alle Karten sind in Fach 3. Stark! Mach jetzt das Quiz.</div>
   <p><button class="btn zweit" onclick="kartenReset('${id}')">Karten wieder in Fach 1 legen</button></p>`; return;
  }
- offen.sort((a,b)=>a.fach-b.fach);
- const akt = offen[0];
+ const st = STAPEL[id];
+ if(!st || !st.queue.length) neueRunde(id);
+ const q = STAPEL[id].queue, i = q[0], k = KARTEN[id][i];
  $("#inhalt").innerHTML = kopf+`
-  <p class="klein">Klicke auf die Karte, um sie umzudrehen. Beantworte die Frage erst im Kopf oder laut.</p>
+  <p class="klein">Runde ${STAPEL[id].runde} · in dieser Runde noch ${q.length} ${q.length===1?'Karte':'Karten'} · Karte liegt in Fach ${fachVon(id,i)}</p>
+  <p class="klein">Klicke auf die Karte, um sie umzudrehen. Beantworte die Frage erst im Kopf oder laut. Nicht gewusste Karten kommen nach drei anderen Karten wieder, gewusste Karten seltener.</p>
   <div class="flip" id="flip" onclick="this.classList.toggle('um')"><div class="innen">
-   <div class="seite">${sub(akt.k[0])}</div><div class="seite rueck">${sub(akt.k[1])}</div></div></div>
-  <button class="btn gruen" onclick="kartenWertung('${id}',${akt.i},true)">✓ Gewusst</button>
-  <button class="btn zweit" onclick="kartenWertung('${id}',${akt.i},false)">✗ Nochmal</button>`;
+   <div class="seite">${sub(k[0])}</div><div class="seite rueck">${sub(k[1])}</div></div></div>
+  <button class="btn gruen" onclick="kartenWertung('${id}',true)">✓ Gewusst</button>
+  <button class="btn zweit" onclick="kartenWertung('${id}',false)">✗ Nochmal</button>`;
 }
-function kartenWertung(id,i,ok){
- const key=id+"-"+i, f=stand.fach[key]||1;
- stand.fach[key]= ok?Math.min(3,f+1):1; sichern(); karteikarten(id);
+function kartenWertung(id,ok){
+ const q = STAPEL[id].queue, i = q.shift(), key = id+"-"+i, f = fachVon(id,i);
+ if(ok){ stand.fach[key] = Math.min(3,f+1); }
+ else { stand.fach[key] = 1; q.splice(Math.min(3,q.length),0,i); }
+ sichern(); karteikarten(id);
 }
-function kartenReset(id){KARTEN[id].forEach((_,i)=>delete stand.fach[id+"-"+i]);sichern();karteikarten(id);}
+function kartenReset(id){KARTEN[id].forEach((_,i)=>delete stand.fach[id+"-"+i]);delete STAPEL[id];sichern();karteikarten(id);}
 
 /* ---------- Quiz ---------- */
 let Q=null;
@@ -597,7 +613,7 @@ function seitePlan(){
 function seiteInfo(){
  $("#app").innerHTML=`<div class="karte"><h2>So lernst du mit Prüfungsfit</h2>
   <ol>
-   <li><b>Karteikarten:</b> Frage lesen, Antwort laut sagen, Karte umdrehen. „Gewusst“ schiebt die Karte ein Fach weiter, „Nochmal“ zurück in Fach 1.</li>
+   <li><b>Karteikarten:</b> Frage lesen, Antwort laut sagen, Karte umdrehen. „Gewusst“ schiebt die Karte ein Fach weiter – Karten aus Fach 2 kommen nur noch jede zweite Runde, Fach 3 ist geschafft. „Nochmal“ legt die Karte zurück in Fach 1, sie kommt nach drei anderen Karten wieder.</li>
    <li><b>Quiz:</b> Pro Bereich 10–14 Fragen (Auswahl, Rechnen, Zuordnen) in zufälliger Reihenfolge. Am Ende siehst du, ob du beim Nennen, Erklären oder Berechnen noch Lücken hast. Ab 80 % ist der Bereich auf der Lernlandkarte grün.</li>
    <li><b>Rechentrainer:</b> Immer neue Zahlen – rechne auf Papier mit Formel, Einsetzen und Einheit wie in der Prüfung.</li>
    <li><b>Prüfungsmix:</b> In den letzten zwei Wochen mehrmals durchführen.</li>
