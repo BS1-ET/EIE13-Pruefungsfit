@@ -508,26 +508,26 @@ const TRAINER = {
    const ub=[5,9,12,24][zufall(0,3)], led=[["rot",2.0],["gelb",2.1],["grün",2.2],["blau",3.0],["weiß",3.2]][zufall(0,4)], i=[10,15,20][zufall(0,2)];
    const r=(ub-led[1])/(i/1000);
    return {text:`Eine ${led[0]}e LED (U<sub>F</sub> = ${de(led[1],1)} V, I<sub>F</sub> = ${i} mA) soll an U<sub>B</sub> = ${ub} V betrieben werden. Berechne den Vorwiderstand R<sub>V</sub> in Ω.`,
-    l:r,einheit:"Ω",tol:1,loes:`R<sub>V</sub> = (${ub} V − ${de(led[1],1)} V) / ${de(i/1000,3)} A = ${de(r,1)} Ω → nächster E12-Wert: ${e12(r)} Ω. Leistung: P = ${de(ub-led[1],1)} V · ${de(i/1000,3)} A = ${de((ub-led[1])*i/1000,3)} W`,
+    l:r,einheit:"Ω",nk:0,loes:`R<sub>V</sub> = (${ub} V − ${de(led[1],1)} V) / ${de(i/1000,3)} A = ${de(r,1)} Ω → nächster E12-Wert: ${e12(r)} Ω. Leistung: P = ${de(ub-led[1],1)} V · ${de(i/1000,3)} A = ${de((ub-led[1])*i/1000,3)} W`,
     bild:ledSVG(ub)};}},
  span:{titel:"Spannungsfall auf der Sirenenleitung",neu(){
-   const l=zufall(8,40), I=zufall(0.2,0.9,0.05), d=[0.6,0.8][zufall(0,1)], A=Math.PI/4*d*d;
+   const l=zufall(8,40), I=zufall(0.2,0.9,0.05), d=[0.6,0.8][zufall(0,1)], A=Math.round(Math.PI/4*d*d*100)/100;
    const du=2*l*I/(56*A);
-   return {text:`Leitung J-Y(St)Y, Aderdurchmesser ${de(d,1)} mm (A = ${de(A,2)} mm²), Länge ${l} m, Strom der Sirene ${de(I,2)} A, Kupfer γ = 56 m/(Ω·mm²). Berechne den Spannungsfall ΔU in V.`,
-    l:du,einheit:"V",tol:2,loes:`ΔU = 2 · ${l} m · ${de(I,2)} A / (56 · ${de(A,2)} mm²) = ${de(du,3)} V. Bei 12 V sind 3 % = 0,36 V erlaubt → ${du<=0.36?'zulässig':'zu groß – Adern parallel schalten'}.`};}},
+   return {text:`Leitung J-Y(St)Y, Aderdurchmesser ${de(d,1)} mm (A = ${A.toLocaleString('de-DE',{minimumFractionDigits:2})} mm²), Länge ${l} m, Strom der Sirene ${de(I,2)} A, Kupfer γ = 56 m/(Ω·mm²). Berechne den Spannungsfall ΔU in V.`,
+    l:du,einheit:"V",nk:2,loes:`ΔU = 2 · ${l} m · ${de(I,2)} A / (56 · ${A.toLocaleString('de-DE',{minimumFractionDigits:2})} mm²) = ${de(du,3)} V. Bei 12 V sind 3 % = 0,36 V erlaubt → ${du<=0.36?'zulässig':'zu groß – Adern parallel schalten'}.`};}},
  energie:{titel:"Zwei Geräte vergleichen",neu(){
    const p1=zufall(40,60), p2=zufall(5,9), h=zufall(2,6), preis=[0.32,0.34,0.36,0.38][zufall(0,3)];
    const diff=(p1-p2)/1000*h*365*preis;
    return {text:`Halogenlampe ${p1} W oder LED-Lampe ${p2} W, beide ${h} h pro Tag an 365 Tagen, Strompreis ${de(preis,2)} €/kWh. Wie viel Euro spart die LED-Lampe pro Jahr?`,
-    l:diff,einheit:"€",tol:1.5,loes:`W<sub>1</sub> = ${de(p1/1000,3)} kW · ${h} h · 365 = ${de(p1/1000*h*365,2)} kWh · W<sub>2</sub> = ${de(p2/1000*h*365,2)} kWh · Ersparnis = (${de(p1/1000*h*365,2)} − ${de(p2/1000*h*365,2)}) kWh · ${de(preis,2)} €/kWh = ${de(diff,2)} €`};}},
+    l:diff,einheit:"€",nk:2,loes:`W<sub>1</sub> = ${de(p1/1000,3)} kW · ${h} h · 365 = ${de(p1/1000*h*365,2)} kWh · W<sub>2</sub> = ${de(p2/1000*h*365,2)} kWh · Ersparnis = (${de(p1/1000*h*365,2)} − ${de(p2/1000*h*365,2)}) kWh · ${de(preis,2)} €/kWh = ${de(diff,2)} €`};}},
  zf:{titel:"Sat-ZF berechnen",neu(){
    const f=zufall(10750,12700,1);
    const high=f>=11700, zf=f-(high?10600:9750);
-   return {text:`Ein Transponder sendet auf ${de(f,0)} MHz. Berechne die Sat-ZF in MHz.`,l:zf,einheit:"MHz",tol:0,
+   return {text:`Ein Transponder sendet auf ${de(f,0)} MHz. Berechne die Sat-ZF in MHz.`,l:zf,einheit:"MHz",nk:0,
     loes:`${high?'High':'Low'}-Band (${high?'≥':'<'} 11 700 MHz) → f<sub>LO</sub> = ${high?'10 600':'9750'} MHz · f<sub>ZF</sub> = ${de(f,0)} − ${high?'10 600':'9750'} = ${de(zf,0)} MHz`};}},
  transistor:{titel:"Transistor als Schalter",neu(){
    const ic=zufall(50,300,10), B=[100,150,200,250][zufall(0,3)], ib=ic/B;
-   return {text:`Ein NPN-Transistor schaltet ein Relais mit I<sub>C</sub> = ${ic} mA. Die Stromverstärkung ist B = ${B}. Berechne den Basisstrom I<sub>B</sub> in mA (ohne Übersteuerung).`,l:ib,einheit:"mA",tol:2,
+   return {text:`Ein NPN-Transistor schaltet ein Relais mit I<sub>C</sub> = ${ic} mA. Die Stromverstärkung ist B = ${B}. Berechne den Basisstrom I<sub>B</sub> in mA (ohne Übersteuerung).`,l:ib,einheit:"mA",nk:2,
     loes:`I<sub>B</sub> = I<sub>C</sub> / B = ${ic} mA / ${B} = ${de(ib,3)} mA`};}}
 };
 const E12=[1,1.2,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.6,6.8,8.2];
@@ -553,16 +553,18 @@ function seiteTrainer(art){
 function trainerNeu(art){
  T={art,a:TRAINER[art].neu()};
  $("#tr").innerHTML=`${T.a.bild||''}<p class="frage">${T.a.text}</p>
-  <input type="text" inputmode="decimal" autocomplete="off" id="treing" placeholder="Ergebnis"> ${T.a.einheit}
+  <p class="hinweis" style="margin:8px 0">Gib das Ergebnis ${T.a.nk===0?'<b>ohne Nachkommastellen</b> (ganze Zahl, gerundet)':'mit <b>'+T.a.nk+' Nachkommastellen</b> an (gerundet)'} – Beispiel: <b>${T.a.nk===0?'1234':'0,'+'0'.repeat(T.a.nk-1)+'5'}</b> ${T.a.einheit}</p>
+  <input type="text" inputmode="decimal" autocomplete="off" id="treing" placeholder="${T.a.nk===0?'0':'0,'+'0'.repeat(T.a.nk)}"> ${T.a.einheit}
   <p><button class="btn" onclick="trainerPruefen()">Prüfen</button>
   <button class="btn zweit" onclick="trainerNeu('${art}')">Neue Zahlen</button></p><div id="trfb"></div>
   <p class="klein">Serie: ${stand.trainer[art]||0} richtig hintereinander</p>`;
 }
 function trainerPruefen(){
  const v=zahl($("#treing").value); if(isNaN(v))return;
- const ok=T.a.tol===0?Math.round(v)===Math.round(T.a.l):Math.abs(v-T.a.l)<=Math.abs(T.a.l)*T.a.tol/100;
+ const soll=Math.round(T.a.l*Math.pow(10,T.a.nk))/Math.pow(10,T.a.nk);
+ const ok=Math.abs(v-soll)<=Math.pow(10,-T.a.nk)+1e-9;
  stand.trainer[T.art]=ok?(stand.trainer[T.art]||0)+1:0; sichern();
- $("#trfb").innerHTML=`<div class="feedback ${ok?'ok':'nein'}"><b>${ok?'Richtig!':'Noch nicht.'}</b> ${T.a.loes}</div>
+ $("#trfb").innerHTML=`<div class="feedback ${ok?'ok':'nein'}"><b>${ok?'Richtig!':'Noch nicht.'}</b> Gerundetes Ergebnis: <b>${soll.toLocaleString('de-DE',{minimumFractionDigits:T.a.nk,maximumFractionDigits:T.a.nk})} ${T.a.einheit}</b><br>${T.a.loes}</div>
   <button class="btn" onclick="seiteTrainer('${T.art}')">Nächste Aufgabe →</button>`;
 }
 
