@@ -437,7 +437,7 @@ function karteikarten(id){
  const kopf = `<div class="fach"><span>Fach 1 (neu): ${zaehl(1)}</span><span>Fach 2 (fast): ${zaehl(2)}</span><span style="background:var(--gruen-hell)">Fach 3 (sicher): ${zaehl(3)}</span></div>`;
  if(zaehl(3)===KARTEN[id].length){
   $("#inhalt").innerHTML = kopf+`<div class="feedback ok">Alle Karten sind in Fach 3. Stark! Mach jetzt das Quiz.</div>
-  <p><button class="btn zweit" onclick="kartenReset('${id}')">Karten wieder in Fach 1 legen</button></p>`; return;
+  <p><button class="btn zweit" onclick="kartenReset('${id}')">↺ Karteikasten zurücksetzen</button></p>`; return;
  }
  const st = STAPEL[id];
  if(!st || !st.queue.length) neueRunde(id);
@@ -448,13 +448,20 @@ function karteikarten(id){
   <div class="flip" id="flip" onclick="this.classList.toggle('um')"><div class="innen">
    <div class="seite">${sub(k[0])}</div><div class="seite rueck">${sub(k[1])}</div></div></div>
   <button class="btn gruen" onclick="kartenWertung('${id}',true)">✓ Gewusst</button>
-  <button class="btn zweit" onclick="kartenWertung('${id}',false)">✗ Nochmal</button>`;
+  <button class="btn zweit" onclick="kartenWertung('${id}',false)">✗ Nochmal</button>
+  <button class="btn zweit" id="resetBtn" style="float:right;color:var(--grau);border-color:#bbb" onclick="kartenResetFrage('${id}',this)">↺ Karteikasten zurücksetzen</button>`;
 }
 function kartenWertung(id,ok){
  const q = STAPEL[id].queue, i = q.shift(), key = id+"-"+i, f = fachVon(id,i);
  if(ok){ stand.fach[key] = Math.min(3,f+1); }
  else { stand.fach[key] = 1; q.splice(Math.min(3,q.length),0,i); }
  sichern(); karteikarten(id);
+}
+function kartenResetFrage(id,el){
+ if(el.dataset.sicher){kartenReset(id);return;}
+ el.dataset.sicher="1"; el.textContent="Alle Karten zurück in Fach 1? Zum Bestätigen hier klicken";
+ el.style.color="var(--rot)"; el.style.borderColor="var(--rot)";
+ setTimeout(()=>{if(document.body.contains(el)){delete el.dataset.sicher;el.textContent="↺ Karteikasten zurücksetzen";el.style.color="var(--grau)";el.style.borderColor="#bbb";}},4000);
 }
 function kartenReset(id){KARTEN[id].forEach((_,i)=>delete stand.fach[id+"-"+i]);delete STAPEL[id];sichern();karteikarten(id);}
 
