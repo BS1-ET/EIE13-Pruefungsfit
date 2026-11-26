@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Einsatz BS1: Funkstille im Schulhaus – Schulhausrallye EIE 13</title>
+<style>
+:root{--rot:#C62828;--rot-hell:#fdecea;--grau:#5f6368;--linie:#dadce0;--bg:#f4f4f5;--gruen:#2e7d32;--gruen-hell:#e8f5e9;--gelb:#f9a825;--gelb-hell:#fff8e1;--dunkel:#1f2933}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#202124;line-height:1.45}
+header{background:var(--dunkel);color:#fff;padding:12px 16px;border-bottom:4px solid var(--rot)}
+header .ober{font-size:11px;color:#ffb4ab;font-weight:bold;letter-spacing:.5px}
+header h1{margin:2px 0 0;font-size:19px}
+main{max-width:640px;margin:0 auto;padding:14px}
+.karte{background:#fff;border:1px solid var(--linie);border-radius:12px;padding:16px;margin-bottom:14px}
+h2{color:var(--rot);font-size:20px;margin:0 0 6px}
+h3{font-size:16px;margin:14px 0 6px}
+.mail{background:var(--gelb-hell);border-left:4px solid var(--gelb);padding:10px 12px;border-radius:6px;font-style:italic}
+.daten{margin:8px 0;padding-left:20px}
+.opt{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:2px solid var(--linie);background:#fff;border-radius:10px;padding:12px;margin:8px 0;font-size:16px;cursor:pointer}
+.opt b{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:50%;background:#eee;font-size:17px}
+.opt.richtig{border-color:var(--gruen);background:var(--gruen-hell)}
+.opt.falsch{border-color:var(--rot);background:var(--rot-hell)}
+.opt:disabled{cursor:default}
+.btn{display:inline-block;background:var(--rot);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:16px;cursor:pointer;text-decoration:none}
+.btn.zweit{background:#fff;color:var(--rot);border:2px solid var(--rot)}
+.btn.gelb{background:var(--gelb);color:#202124}
+.fb{padding:12px;border-radius:8px;margin-top:10px}
+.fb.ok{background:var(--gruen-hell);border-left:4px solid var(--gruen)}
+.fb.nein{background:var(--rot-hell);border-left:4px solid var(--rot)}
+.fb.tipp{background:var(--gelb-hell);border-left:4px solid var(--gelb)}
+.wort{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.wort a{width:46px;height:56px;border:2px solid var(--linie);border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:bold;color:#202124;text-decoration:none}
+.wort a small{font-size:10px;color:var(--grau);font-weight:normal}
+.wort a.da{border-color:var(--gruen);background:var(--gruen-hell)}
+input[type=text]{font-size:18px;padding:10px;border:2px solid #bbb;border-radius:8px;width:100%;max-width:340px;text-transform:uppercase}
+.klein{font-size:13px;color:var(--grau)}
+.uhr{font-size:26px;font-weight:bold;font-variant-numeric:tabular-nums}
+.foto label{display:block;padding:6px 0}
+.sieg{text-align:center}
+.sieg .gross{font-size:34px;font-weight:bold;color:var(--gruen);letter-spacing:4px}
+footer{max-width:640px;margin:10px auto 30px;padding:8px 14px;border-top:1px solid var(--linie);display:flex;justify-content:space-between;font-size:11px;color:var(--grau)}
+.konfetti{position:fixed;top:-20px;width:10px;height:16px;opacity:.9;animation:fall linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<header>
+ <div class="ober">BS1 BAYREUTH · EIE 13 · PRÜFUNGSVORBEREITUNG GuS · ÜK</div>
+ <h1>📡 Einsatz BS1: Funkstille im Schulhaus</h1>
+</header>
+<main id="app"></main>
+<footer><span>Schulhausrallye „Funkstille im Schulhaus“ · Online-Check · EIE 13</span><span>rallye/index.html</span></footer>
+
+<script>
+/* Schulhausrallye – Daten werden aus stationen.py erzeugt. Antworten nur als Prüfsumme gespeichert. */
+const STATIONEN = [{"nr": 1, "ort": "Marktplatz beim Atrium (2. OG links)", "titel": "Kein Bild im Lehrerzimmer", "meldung": "Am Fernseher im Lehrerzimmer steht „Kein Signal“. Die Kollegen wollen heute Abend das Länderspiel sehen!", "daten": ["DVB-T2-Antennenpegel: 64 dBµV", "Verstärker: 24 dB", "Kabel bis zum Verteiler: 4 dB", "4-fach-Verteiler: 8 dB", "Anschlussdämpfung der Dose: 2 dB", "gefordert an der Dose: 60–74 dBµV"], "frage": "Welcher Pegel kommt an der Dose im Lehrerzimmer an?", "optionen": [["K", "50 dBµV"], ["B", "74 dBµV"], ["M", "82 dBµV"], ["R", "102 dBµV"]], "hilfe": "Pegel an der Dose = Antennenpegel + Verstärkung − alle Dämpfungen. In dB wird nur addiert und subtrahiert.", "gespraech": "Der Pegel ist in Ordnung. Wo sucht ihr den Fehler als Nächstes?", "h": "e99385c62f3cfebc0b9b5b3c91bc75e2013028737a7cda41b6f8afbfdc78f2a6"}, {"nr": 2, "ort": "Marktplatz beim Atrium (2. OG rechts)", "titel": "Der Mast wackelt", "meldung": "Nach dem Sturm hört man auf dem Dach ein Knarzen. Hält der Antennenmast die Last noch aus?", "daten": ["UKW-Antenne: 25 N in 2,0 m", "UHF-Antenne: 60 N in 1,5 m", "Parabolspiegel: 500 N in 0,5 m", "Abstände ab der oberen Mastschelle (Einspannstelle)", "zulässiges Biegemoment des Mastes: 400 Nm"], "frage": "Wie groß ist das Biegemoment, und hält der Mast?", "optionen": [["E", "390 Nm – der Mast hält"], ["U", "390 Nm – der Mast hält nicht"], ["W", "585 Nm – der Mast hält nicht"], ["X", "1170 Nm – der Mast hält nicht"]], "hilfe": "Für jede Antenne M = F · l rechnen und alle Momente addieren. Dann mit dem zulässigen Moment vergleichen.", "gespraech": "Was könnt ihr tun, wenn das zulässige Biegemoment überschritten wird?", "h": "c3c72199a597a5c724f04ba0c327c43b5cd68952cbdbdfdca0fd39b4a47cd351"}, {"nr": 3, "ort": "Marktplatz beim Atrium (1. OG links)", "titel": "Gewitter im Anmarsch", "meldung": "Der Dachdecker fragt, ob die neue Antenne am Dachsparrenhalter geerdet werden muss. Es zieht ein Gewitter auf.", "daten": ["Antenne 1,0 m unter der Dachkante", "Abstand zur Außenwand: 0,5 m", "Gebäude ohne Blitzschutzanlage"], "frage": "Muss die Antenne geerdet werden – und wenn ja, womit?", "optionen": [["O", "Nein, sie liegt im geschützten Bereich."], ["P", "Ja, mit einem Erdungsleiter von mind. 4 mm² Cu."], ["S", "Ja, mit einem Erdungsleiter von mind. 16 mm² Cu."], ["Z", "Ja, mit einer Leitung NYM 3 × 1,5 mm²."]], "hilfe": "Ohne Erdung geht es nur, wenn die Antenne mind. 2 m unter der Dachkante UND höchstens 1,5 m von der Wand entfernt ist.", "gespraech": "Was wird zusätzlich mit 4 mm² Cu an die Potentialausgleichsschiene angeschlossen?", "h": "9993b10ec3f2a34c867605a17c67a1d28b7119e58d583133a201fd71151431fb"}, {"nr": 4, "ort": "Marktplatz beim Atrium (1. OG rechts)", "titel": "Farbenlehre der Melder", "meldung": "Die Schreinerei bekommt im Holzlager einen Handmelder. Er soll nur die Mitarbeiter warnen – die Feuerwehr soll NICHT kommen.", "daten": ["Handmelder nur für internen Alarm (Hausalarm)", "Holzlager mit viel Holzstaub"], "frage": "Welche Farbe hat dieser Handmelder?", "optionen": [["R", "rot"], ["T", "blau"], ["G", "gelb"], ["F", "grün"]], "hilfe": "Ein roter Handfeuermelder alarmiert die Feuerwehr. Welche Farbe hat dann der Hausalarm?", "gespraech": "Warum ist in der staubigen Schreinerei ein optischer Rauchmelder keine gute Wahl?", "h": "9716f3564e8ba68b0de5823f2ebe58507ff4090505385cda019ecd1ba1cb7cbc"}, {"nr": 5, "ort": "Eingangsbereich beim Sekretariat (EG)", "titel": "Kameras bleiben dunkel", "meldung": "Die neuen Überwachungskameras am Parkplatz gehen nur teilweise. Der Kunde vermutet einen Defekt.", "daten": ["5 IP-Kameras, je 13 W", "PoE-Switch mit 60 W PoE-Budget, 48 V", "Standard IEEE 802.3af (15,4 W je Port)"], "frage": "Reicht das PoE-Budget des Switches?", "optionen": [["O", "Ja, es bleiben 5 W Reserve."], ["A", "Nein, es fehlen 5 W."], ["I", "Ja, weil jede Kamera unter 15,4 W bleibt."], ["Q", "Nein, weil IP-Kameras 230 V brauchen."]], "hilfe": "Rechnet die Leistung aller Kameras zusammen und vergleicht sie mit dem PoE-Budget des Switches.", "gespraech": "Welche zwei Lösungen schlagt ihr dem Kunden vor?", "h": "e992425c8f71d3ea21e4e41ecac1c5cadd5f457665988d793c165bbc27678c42"}, {"nr": 6, "ort": "Marktplatz Elektrotechnik (2. OG)", "titel": "Ein Sender fehlt", "meldung": "Ein Kunde findet einen Sender nicht mehr. Laut Senderliste sendet er auf 11 778 MHz.", "daten": ["Transponder: 11 778 MHz", "Universal-LNB: LOF 9,75 GHz / 10,6 GHz", "Bandgrenze: 11,7 GHz"], "frage": "Auf welcher Sat-ZF kommt der Sender beim Receiver an?", "optionen": [["N", "1178 MHz"], ["M", "2028 MHz"], ["Z", "22 378 MHz"]], "hilfe": "Über 11,7 GHz liegt das High-Band mit LOF 10,6 GHz. f_ZF = f_E − f_LO", "gespraech": "Mit welchem Signal schaltet der Receiver das LNB auf das High-Band?", "h": "3b1270534fc9a4c95a6c0a852f6676a6a3a958fc16d8e62356abd0a508bf0834"}, {"nr": 7, "ort": "Marktplatz Mechatronik (1. OG)", "titel": "Akku leer", "meldung": "Die Einbruchmeldeanlage im Büro meldet „Akku schwach“. Der Kunde will wissen, welchen Akku er braucht.", "daten": ["VdS-Klasse B, keine Störungsweiterleitung", "Ruhestrom I_R = 0,2 A", "Sirene: 0,6 A", "Blitzleuchte: 0,2 A"], "frage": "Welche Akkukapazität ist mindestens nötig?", "optionen": [["K", "2,51 Ah"], ["L", "6,11 Ah"], ["D", "12,11 Ah"], ["V", "14,51 Ah"]], "hilfe": "Klasse B ohne Weiterleitung: 60 h. K = t · I_R + 1/60 h · I_Sirene + 0,5 h · I_Blitz", "gespraech": "Wann würde eine Überbrückungszeit von 30 h genügen?", "h": "3ff0e15aec70d47e427d8f8f0bfe797e1a929c98f4a4be4b92bdc1f7a20525a2"}, {"nr": 8, "ort": "Aula (EG)", "titel": "Halle ohne Schutz", "meldung": "Eine Veranstaltungshalle – so ähnlich wie diese Aula – bekommt eine Brandmeldeanlage.", "daten": ["Halle 24 m × 10 m, Höhe 5 m, Flachdach", "Rauchmelder: A_M = 60 m², D_H = 5,7 m", "Melder im gleichmäßigen Raster"], "frage": "Wie viele Rauchmelder sind mindestens nötig?", "optionen": [["G", "4 Melder im Raster 2 × 2"], ["H", "4 Melder in einer Reihe (4 × 1)"], ["E", "5 Melder in einer Reihe (5 × 1)"], ["F", "6 Melder im Raster 3 × 2"]], "hilfe": "Erst n = A / A_M rechnen. Dann für jedes Raster prüfen: r = √((a/2)² + (b/2)²) ≤ D_H?", "gespraech": "Warum reicht die Rechnung n = A / A_M allein nicht aus?", "h": "ce023bdb45b689eba4489b7a1a513fbb624e887b2219f1218681d6ce2a7e9dfb"}, {"nr": 9, "ort": "Marktplatz IT-Technik (2. OG)", "titel": "Die LED raucht ab", "meldung": "An der Statusanzeige des Netzwerkschranks brennen ständig LEDs durch. Ein Azubi hat sie direkt angeschlossen.", "daten": ["Betriebsspannung U_B = 12 V", "rote LED: U_F = 2,0 V, I_F = 20 mA", "Widerstände nur aus der E12-Reihe"], "frage": "Welchen Vorwiderstand baut ihr ein?", "optionen": [["H", "470 Ω"], ["W", "500 Ω"], ["N", "560 Ω"], ["P", "600 Ω"]], "hilfe": "R_V = (U_B − U_F) / I_F, danach den nächstgrößeren E12-Wert wählen: … 390 – 470 – 560 – 680 …", "gespraech": "Welche Leistung wird im Vorwiderstand umgesetzt?", "h": "ef7e96315d0588abae95202ab1c916b214032406c482f765336fc006fcce63ba"}];
+const WORT_HASH = "818fdd1069d09d357f7c84f8de57ba620d667da965c2138818e85761674f452e";
+const FOTOJAGD = ["Rauchmelder an der Decke", "Handfeuermelder (rot)", "Rettungszeichen- oder Notleuchte", "WLAN-Access-Point", "Netzwerk- oder Antennendose", "Potentialausgleichsschiene (schwer!)"];
+const LAENGE = STATIONEN.length;
+const KEY = "rallye_funkstille_v1";
+let st = {team:"", start:0, ende:0, buchstaben:{}, joker:{}, fehlversuche:0, foto:{}};
+function laden(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)st=Object.assign(st,s);}catch(e){}}
+function sichern(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+laden();
+const $=s=>document.querySelector(s);
+const sub=t=>t.replace(/\b([A-Za-z])_([A-Za-z]{1,6})\b/g,"$1<sub>$2</sub>");
+async function hash(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+const jokerMin=()=>Object.keys(st.joker).length*2;
+function zeit(ms){const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+let uhr=null;
+
+function starte(){
+ const n=$("#team").value.trim();
+ if(!n){$("#team").focus();return;}
+ st.team=n.slice(0,30); st.start=Date.now(); sichern(); route();
+}
+function startSeite(ziel){
+ $("#app").innerHTML=`<div class="karte">
+  <h2>Einsatzbefehl</h2>
+  <div class="mail">„Heute Nacht hat die Alarmanlage ausgelöst, die BMA meldet Störung und im Lehrerzimmer ist das Fernsehbild weg. Bitte schicken Sie sofort Ihre Kundendienst-Teams! Die Störungsmeldungen habe ich überall im Haus verteilt.“<br>– Der Hausmeister</div>
+  <p>Ihr seid ein Kundendienst-Team der Firma <b>Funk &amp; Feuer Elektrotechnik GmbH</b>. Löst an 9 Stationen im Schulhaus die Störungen. Jede richtige Lösung liefert einen Buchstaben – zusammen ergeben sie das Lösungswort. Dann ab ins Klassenzimmer!</p>
+  <h3>Euer Teamname</h3>
+  <input type="text" id="team" maxlength="30" placeholder="z. B. Team Quattro-LNB" style="text-transform:none">
+  <p class="klein">Bitte einen Fantasienamen – keine echten Namen. Der Fortschritt wird nur auf diesem Handy gespeichert.</p>
+  <button class="btn" onclick="starte()">🚨 Einsatz starten</button></div>`;
+}
+
+function uebersicht(){
+ const fertig=Object.keys(st.buchstaben).length;
+ $("#app").innerHTML=`<div class="karte">
+  <h2>${esc(st.team)} – Einsatzübersicht</h2>
+  <div class="uhr" id="uhr">${zeit(Date.now()-st.start)}</div>
+  <div class="klein">Einsatzzeit · Joker: ${Object.keys(st.joker).length} (+${jokerMin()} min)</div>
+  <h3>Euer Lösungswort (${fertig} von ${LAENGE})</h3>
+  <div class="wort">${STATIONEN.map(s=>`<a class="${st.buchstaben[s.nr]?'da':''}" href="?s=${s.nr}">${st.buchstaben[s.nr]||'?'}<small>${s.nr}</small></a>`).join("")}</div>
+  <p class="klein">Tippe auf ein Feld, um die Station zu öffnen – oder scannt den QR-Code an der Station.</p>
+  <h3>Lösungswort eingeben</h3>
+  <input type="text" id="wort" maxlength="12" placeholder="Lösungswort">
+  <p><button class="btn" onclick="pruefeWort()">✅ Einsatz abschließen</button></p><div id="wfb"></div>
+ </div>
+ <div class="karte foto"><h3>📸 Fotojagd (Bonus)</h3>
+  <p class="klein">Fotografiert unterwegs diese Bauteile – nur das Bauteil, keine Personen. Hakt ab, was ihr habt. Im Finale zeigt ihr die Fotos.</p>
+  ${FOTOJAGD.map((f,i)=>`<label><input type="checkbox" ${st.foto[i]?'checked':''} onchange="st.foto[${i}]=this.checked;sichern()"> ${f}</label>`).join("")}
+ </div>`;
+ tick();
+}
+function tick(){clearInterval(uhr);uhr=setInterval(()=>{const u=$("#uhr");if(!u){clearInterval(uhr);return;}u.textContent=zeit(Date.now()-st.start);},1000);}
+function esc(t){return t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function station(nr){
+ const s=STATIONEN.find(x=>x.nr===nr);
+ if(!s){uebersicht();return;}
+ const geloest=st.buchstaben[nr];
+ $("#app").innerHTML=`<div class="karte">
+  <div class="klein">Station ${s.nr} von ${LAENGE} · ${s.ort}</div>
+  <h2>${s.titel}</h2>
+  <div class="mail">„${s.meldung}“</div>
+  <h3>Daten vor Ort</h3><ul class="daten">${s.daten.map(d=>`<li>${sub(d)}</li>`).join("")}</ul>
+  <h3>${sub(s.frage)}</h3>
+  <div id="opts">${s.optionen.map(([b,t],i)=>`<button class="opt" id="o${i}" onclick="pruefe(${nr},${i})"><b>${b}</b><span>${sub(t)}</span></button>`).join("")}</div>
+  <div id="fb">${geloest?`<div class="fb ok"><b>Schon gelöst!</b> Euer Buchstabe für Feld ${nr}: <b>${geloest}</b></div>`:''}</div>
+  <div id="tipp">${st.joker[nr]?`<div class="fb tipp"><b>📻 Funkspruch:</b> ${sub(s.hilfe)}</div>`:''}</div>
+  <p>${!geloest&&!st.joker[nr]?`<button class="btn gelb" id="jokerBtn" onclick="joker(${nr})">📻 Funkspruch anfordern (+2 min)</button> `:''}
+   <a class="btn zweit" href="./">Zur Einsatzübersicht</a></p>
+  <div class="klein">Für das Finale: ${s.gespraech}</div></div>`;
+ if(geloest){const i=s.optionen.findIndex(o=>o[0]===geloest);if(i>=0)$("#o"+i).classList.add("richtig");}
+}
+async function pruefe(nr,i){
+ const s=STATIONEN.find(x=>x.nr===nr), b=s.optionen[i][0];
+ const ok=(await hash("BS1-Rallye|"+nr+"|"+b))===s.h;
+ document.querySelectorAll(".opt").forEach(o=>o.classList.remove("falsch"));
+ if(ok){
+  st.buchstaben[nr]=b; sichern();
+  $("#o"+i).classList.add("richtig");
+  document.querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  const jb=$("#jokerBtn"); if(jb) jb.remove();
+  $("#fb").innerHTML=`<div class="fb ok"><b>Störung behoben! 🎉</b> Euer Buchstabe für Feld ${nr}: <b style="font-size:22px">${b}</b><br>Tragt ihn auch im Laufzettel ein und lauft zur nächsten Station.</div>`;
+ } else {
+  st.fehlversuche++; sichern();
+  $("#o"+i).classList.add("falsch");
+  $("#fb").innerHTML=`<div class="fb nein"><b>Das stimmt noch nicht.</b> Rechnet noch einmal nach – Formel, Einsetzen, Einheit.</div>`;
+ }
+}
+function joker(nr){st.joker[nr]=true;sichern();station(nr);}
+async function pruefeWort(){
+ const w=$("#wort").value.trim().toUpperCase();
+ if(!w)return;
+ if((await hash("BS1-Rallye|WORT|"+w))===WORT_HASH){
+  if(!st.ende){st.ende=Date.now();sichern();}
+  sieg();
+ } else {
+  $("#wfb").innerHTML=`<div class="fb nein"><b>Das ist noch nicht das Lösungswort.</b> Prüft die Stationen, bei denen euch der Buchstabe komisch vorkommt.</div>`;
+ }
+}
+function sieg(){
+ clearInterval(uhr);
+ const fotos=Object.values(st.foto).filter(Boolean).length;
+ const roh=st.ende-st.start, gesamt=roh+jokerMin()*60000;
+ $("#app").innerHTML=`<div class="karte sieg">
+  <h2>Einsatz abgeschlossen!</h2>
+  <div class="gross">${STATIONEN.map(s=>st.buchstaben[s.nr]||'').join("")||'✓'}</div>
+  <p><b>${esc(st.team)}</b></p>
+  <table style="margin:0 auto;text-align:left;font-size:16px">
+   <tr><td>Einsatzzeit</td><td><b>${zeit(roh)}</b></td></tr>
+   <tr><td>Joker (+2 min je Funkspruch)</td><td><b>+${jokerMin()} min</b></td></tr>
+   <tr><td>Wertungszeit</td><td><b>${zeit(gesamt)}</b></td></tr>
+   <tr><td>Fotojagd</td><td><b>${fotos} von ${FOTOJAGD.length}</b></td></tr>
+  </table>
+  <p>🏆 Ab ins Klassenzimmer! Zeigt diesen Bildschirm eurer Lehrkraft.</p>
+  <p class="klein">Abgeschlossen um ${new Date(st.ende).toLocaleTimeString("de-DE")} Uhr</p>
+  <p><a class="btn zweit" href="./">Zur Übersicht</a></p></div>`;
+ konfetti();
+}
+function konfetti(){
+ const f=["#C62828","#f9a825","#2e7d32","#1565c0","#ffffff"];
+ for(let i=0;i<70;i++){const d=document.createElement("div");d.className="konfetti";
+  d.style.left=Math.random()*100+"vw";d.style.background=f[i%f.length];
+  d.style.animationDuration=(2+Math.random()*2.5)+"s";d.style.animationDelay=Math.random()*0.8+"s";
+  document.body.appendChild(d);setTimeout(()=>d.remove(),5500);}
+}
+function neuStart(){if(confirm("Wirklich alles löschen und neu beginnen?")){try{localStorage.removeItem(KEY)}catch(e){};location.href="./";}}
+
+function route(){
+ const p=new URLSearchParams(location.search), s=parseInt(p.get("s"));
+ if(p.has("neu")){neuStart();return;}
+ if(!st.start){startSeite();return;}
+ if(st.ende && !s){sieg();return;}
+ if(s) station(s); else uebersicht();
+}
+route();
+</script>
+</body>
+</html>
